@@ -7,9 +7,9 @@ from img2pdf import convert
 def convert_heic_to_pdf(heic_files, image_quality, pdf_layout):
     # ... (unchanged)
 
-    def main():
-        st.sidebar.title("Unlocking the Power of HEIC: Convert to PDF with Ease!")
-        st.sidebar.markdown(
+def main():
+    st.sidebar.title("Unlocking the Power of HEIC: Convert to PDF with Ease!")
+    st.sidebar.markdown(
         "Tired of compatibility issues with HEIC images?\n\n"
         "Introducing the HEIC to PDF Converter, your one-stop solution for seamless file conversion! "
         "Whether you're sharing photos with friends on different devices or submitting documents for work, "
@@ -48,3 +48,6 @@ def convert_heic_to_pdf(heic_files, image_quality, pdf_layout):
         else:
             st.warning("Please upload HEIC files first.")
 
+# Call the main function to run the Streamlit app
+if __name__ == "__main__":
+    main()
