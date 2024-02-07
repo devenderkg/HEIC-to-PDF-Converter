@@ -8,7 +8,7 @@ def convert_heic_to_pdf(heic_files, image_quality, pdf_layout):
     # ... (unchanged)
 
     def main():
-    st.sidebar.title("Unlocking the Power of HEIC: Convert to PDF with Ease!")
+        st.sidebar.title("Unlocking the Power of HEIC: Convert to PDF with Ease!")
     st.sidebar.markdown(
     "Tired of compatibility issues with HEIC images?\n\n"
     "Introducing the HEIC to PDF Converter, your one-stop solution for seamless file conversion! "
