@@ -22,7 +22,7 @@ def main():
     "- **Accessible from anywhere:** Use our app from any device, anytime you need it.\n"
     "- **Free and easy to use:** No sign-ups required, just start converting in seconds!\n\n"
     "Don't get locked out by incompatible formats! Convert your HEIC images to universal PDFs with the HEIC to PDF Converter today!"
-)
+    )
 
     st.title("HEIC to PDF Converter")
     st.markdown("Convert HEIC files to PDF with ease!")
