@@ -49,5 +49,5 @@ def convert_heic_to_pdf(heic_files, image_quality, pdf_layout):
                 st.warning("Please upload HEIC files first.")
 
         # Call the main function to run the Streamlit app
-        if __name__ == "__main__":
+    if __name__ == "__main__":
         main()
