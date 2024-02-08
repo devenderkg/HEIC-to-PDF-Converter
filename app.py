@@ -1,12 +1,22 @@
 import streamlit as st
 from PIL import Image
 from fpdf import FPDF
+import pyheif
+import io
 
 def heic_to_pdf(heic_images, output_pdf_path, quality=75, single_page_layout=True):
     pdf = FPDF()
     
     for heic_image in heic_images:
-        img = Image.open(heic_image)
+        heif_file = pyheif.read(heic_image.read())
+        img = Image.frombytes(
+            heif_file.mode, 
+            heif_file.size, 
+            heif_file.data,
+            "raw",
+            heif_file.mode,
+            heif_file.stride,
+        )
         
         # Resize the image to maintain aspect ratio and reduce file size
         img.thumbnail((1024, 1024))
@@ -47,7 +57,7 @@ def main():
         if st.button("Convert to PDF"):
             # Perform conversion
             pdf_layout_single_page = pdf_layout == "Single image per page"
-            heic_paths = [file for file in heic_files if file is not None]  # Exclude None values
+            heic_paths = heic_files
             output_pdf_path = "output.pdf"  # You can customize the output path/name
 
             heic_to_pdf(heic_paths, output_pdf_path, quality=image_quality, single_page_layout=pdf_layout_single_page)
