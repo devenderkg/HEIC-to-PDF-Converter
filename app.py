@@ -35,13 +35,13 @@ def main():
             st.write(f"- {file.name} ({round(file.size / 1e6, 2)} MB)")
 
         # Advanced Options
-        st.sidebar.subheader("Advanced Options")
+        st.write("\n**Advanced Options**")
 
         # Image Quality
-        image_quality = st.sidebar.slider("Image Quality", min_value=1, max_value=100, value=75)
+        image_quality = st.slider("Image Quality", min_value=1, max_value=100, value=75)
 
         # PDF Layout
-        pdf_layout = st.sidebar.radio("PDF Layout", ["Single image per page", "Multiple images per page"])
+        pdf_layout = st.radio("PDF Layout", ["Single image per page", "Multiple images per page"])
 
         # Convert button
         if st.button("Convert to PDF"):
