@@ -4,18 +4,28 @@ from io import BytesIO
 from pathlib import Path
 import os
 import img2pdf
+import pyheif
 
 # Function to convert HEIC to PDF
 def heic_to_pdf(heic_images, pdf_quality="High Quality", pdf_layout="Single image per page"):
     pdfs = []
 
     for heic_image in heic_images:
-        # Conversion logic using img2pdf
+        # Conversion logic using pyheif and img2pdf
         heic_data = BytesIO(heic_image.read())
-        img = Image.open(heic_data)
+        heif_file = pyheif.read(heic_data)
+
+        image = Image.frombytes(
+            heif_file.mode, 
+            heif_file.size, 
+            heif_file.data,
+            "raw",
+            heif_file.mode,
+            heif_file.stride,
+        )
 
         pdf_data = BytesIO()
-        img.save(pdf_data, format="PDF", quality=pdf_quality.lower())
+        image.save(pdf_data, format="PDF", quality=pdf_quality.lower())
 
         pdfs.append(pdf_data)
 
