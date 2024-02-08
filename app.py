@@ -6,7 +6,7 @@ def heic_to_pdf(heic_images, output_pdf_path, quality=75, single_page_layout=Tru
     pdf = FPDF()
     
     for heic_image in heic_images:
-        img = Image.open(heic_image)
+        img = Image.open(heic_image.stream)
         
         # Resize the image to maintain aspect ratio and reduce file size
         img.thumbnail((1024, 1024))
@@ -47,7 +47,7 @@ def main():
         if st.button("Convert to PDF"):
             # Perform conversion
             pdf_layout_single_page = pdf_layout == "Single image per page"
-            heic_paths = [file.name for file in heic_files]
+            heic_paths = [file for file in heic_files if file is not None]  # Exclude None values
             output_pdf_path = "output.pdf"  # You can customize the output path/name
 
             heic_to_pdf(heic_paths, output_pdf_path, quality=image_quality, single_page_layout=pdf_layout_single_page)
