@@ -1,76 +1,60 @@
 import streamlit as st
 from PIL import Image
-from io import BytesIO
-from pathlib import Path
-import os
-import img2pdf
-import pyheif
+from fpdf import FPDF
 
-# Function to convert HEIC to PDF
-def heic_to_pdf(heic_images, pdf_quality="High Quality", pdf_layout="Single image per page"):
-    pdfs = []
-
+def heic_to_pdf(heic_images, output_pdf_path, quality=75, single_page_layout=True):
+    pdf = FPDF()
+    
     for heic_image in heic_images:
-        # Conversion logic using pyheif and img2pdf
-        heic_data = BytesIO(heic_image.read())
-        heif_file = pyheif.read(heic_data)
+        img = Image.open(heic_image)
+        
+        # Resize the image to maintain aspect ratio and reduce file size
+        img.thumbnail((1024, 1024))
+        
+        pdf.add_page()
+        
+        if single_page_layout:
+            pdf.image(img, x=10, y=10, w=190)
+        else:
+            pdf.image(img, x=10, y=10, w=90)
+            pdf.ln(90)
+        
+    pdf.output(output_pdf_path)
 
-        image = Image.frombytes(
-            heif_file.mode, 
-            heif_file.size, 
-            heif_file.data,
-            "raw",
-            heif_file.mode,
-            heif_file.stride,
-        )
-
-        pdf_data = BytesIO()
-        image.save(pdf_data, format="PDF", quality=pdf_quality.lower())
-
-        pdfs.append(pdf_data)
-
-    return pdfs
-
-# Streamlit app
 def main():
     st.title("HEIC to PDF Converter")
     st.write("Convert HEIC images to PDF effortlessly.")
 
-    # Choose Conversion Options on the main page
-    st.sidebar.header("Conversion Options")
+    # Upload HEIC files
+    heic_files = st.file_uploader("Drag and drop HEIC files here", type=["heic"], accept_multiple_files=True)
 
-    # Upload area
-    uploaded_files = st.file_uploader("Drag and drop HEIC files here", type=["heic"], accept_multiple_files=True)
+    if heic_files:
+        # Display file details
+        st.write("Files to convert:")
+        for file in heic_files:
+            st.write(f"- {file.name} ({round(file.size / 1e6, 2)} MB)")
 
-    # Or choose files using a button
-    if not uploaded_files:
-        uploaded_files = st.file_uploader("Choose Files", type=["heic"], accept_multiple_files=True)
+        # Advanced Options
+        st.sidebar.subheader("Advanced Options")
 
-    # Conversion options panel
-    with st.expander("Advanced Options"):
-        pdf_quality = st.selectbox("Image Quality", ["High Quality", "Medium Quality", "Low Quality"])
-        pdf_layout = st.radio("PDF Layout", ["Single image per page", "Multiple images per page", "Contact sheet layout"])
+        # Image Quality
+        image_quality = st.sidebar.slider("Image Quality", min_value=1, max_value=100, value=75)
 
-        # Additional settings for experienced users if needed
+        # PDF Layout
+        pdf_layout = st.sidebar.radio("PDF Layout", ["Single image per page", "Multiple images per page"])
 
-    # Convert button
-    if st.button("Convert"):
-        if uploaded_files:
-            st.info("Converting... This may take a moment.")
-            converted_pdfs = heic_to_pdf(uploaded_files, pdf_quality, pdf_layout)
+        # Convert button
+        if st.button("Convert to PDF"):
+            # Perform conversion
+            pdf_layout_single_page = pdf_layout == "Single image per page"
+            heic_paths = [file.name for file in heic_files]
+            output_pdf_path = "output.pdf"  # You can customize the output path/name
 
-            # Display converted PDFs and download links
-            st.subheader("Download Converted PDFs:")
-            for idx, pdf_data in enumerate(converted_pdfs):
-                st.markdown(f"**File {idx + 1}** - {len(pdf_data.getvalue()) / (1024 * 1024):.2f} MB")
-                st.download_button(label="Download", data=pdf_data.getvalue(), key=f"converted_pdf_{idx}.pdf")
+            heic_to_pdf(heic_paths, output_pdf_path, quality=image_quality, single_page_layout=pdf_layout_single_page)
 
-            st.success("Conversion complete!")
-
-    # Information section
-    st.sidebar.header("Information")
-    st.sidebar.write("HEIC (High-Efficiency Image Format) is a file format for individual images and image sequences. "
-                     "This app allows you to convert HEIC images to PDFs with ease.")
+            # Provide download link for the generated PDF
+            st.success("Conversion successful! Click below to download the PDF.")
+            st.markdown(f"Download [Converted PDF](./{output_pdf_path})")
 
 if __name__ == "__main__":
     main()
